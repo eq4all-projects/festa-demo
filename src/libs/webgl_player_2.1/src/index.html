@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="eq4all_suzi_64x64.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Web site created using create-react-app"
+    />
+    <title>EQ4All WebGL Player</title>
+  </head>
+  <body>
+
+    <div id="webgl_signlanguage"></div>
+    <div id="animation_list"></div>
+    <div id="webgl_signlanguage_button">
+      <button
+        onclick="play(0)">test1</button>
+      <button
+        onclick="play(1)">주먹도끼</button>
+      <button
+        onclick="play(2)">짐승얼굴무늬 기와</button>
+      <button
+        onclick="play(3)">대동여지도 목판</button>
+      <button
+        onclick="play(4)">31717</button>
+      <button
+        onclick="play(5)">긴 문장</button>
+      <button
+        onclick="play(6)">Lv4 플레이 테스트</button>
+              <button
+        onclick="play(7)">팔부중</button>
+
+    </div>
+    
+    <script>
+      let play = function(index) {
+        if (index == 0) webGLPlayer.setSentence("0000000021-0000000107-ba5cde0cf853497db7836f7196f1bd16-242b1b653a6b48ef918903e1acb8a07c_0000000001_0000000008", 0.3, "Sentence");
+        else if (index == 1) webGLPlayer.setSentence("0000000052-0000000146-501a77d3b4c94b66a11f2321e3e3077e-4379e27aaa044ec08bf2f17d4f8626ed_0000000001_0000000001", 0.3, "Sentence");
+        else if (index == 2) webGLPlayer.setSentence("0000000052-0000000146-c2a4a82589624afdac0d86be7444af6d-1d816f87f3534d48a142124fb8fb62cb_0000000001_0000000001", 0.3, "Sentence");
+        else if (index == 3) webGLPlayer.setSentence("0000000052-0000000146-fd02d9e6e6db4ed9a0b88a45ae4c446e-8461e057b4094ba7bce7b3714d19e92f_0000000001_0000000001", 0.3, "Sentence");
+        else if (index == 4) webGLPlayer.setSentence("0000000021-0000000107-ba5cde0cf853497db7836f7196f1bd16-242b1b653a6b48ef918903e1acb8a07c_0000000001_0000000006", 0.3, "Sentence");
+        else if (index == 5) webGLPlayer.setSentence("0000000021-0000000107-ba5cde0cf853497db7836f7196f1bd16-87f29ffb71f54a0399129b8ba0adf87f_0000000001_0000000081", 0.3, "Sentence");
+        else if (index == 6) webGLPlayer.setSentence("4ee7f193f66c4e7696a79afd487455e0", 0.3, 4);
+        else if(index == 7) webGLPlayer.setSentence("0000000052-0000000113-27897167e81a42bda0566e1c6012c850-494bb38cdec24dbf8ce3b820d433545a_0000000001_0000000001", 0.3, "Sentence")
+      }
+    </script>
+  </body>
+</html>
