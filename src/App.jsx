@@ -1,9 +1,7 @@
-import WebGLPlayer from "./components/WebGLPlayer";
+import LandingPage from "./components/LandingPage";
 
 const App = () => {
-    return (
-        <WebGLPlayer />
-    );
+  return <LandingPage />;
 };
 
 export default App;

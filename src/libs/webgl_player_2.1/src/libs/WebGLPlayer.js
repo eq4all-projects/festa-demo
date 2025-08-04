@@ -130,7 +130,16 @@ export default class WebGLPlayer {
     };
 
     this.requestAnimationFrameParam = null;
+    this.characterYRotation = 0;
   }
+
+    rotateLeft() {
+        this.characterYRotation -= Math.PI / 12; // 15 degrees
+    }
+
+    rotateRight() {
+        this.characterYRotation += Math.PI / 12; // 15 degrees
+    }
 
   /**
    *  매 프레임마다 반복. 캔버스에 렌더링해주는 역할
@@ -272,7 +281,7 @@ export default class WebGLPlayer {
     this.webGLMixer.mixer.update(this.delta);
 
     this.characterObject.position.set(0, 0, 0);
-    this.characterObject.quaternion.set(0, 0, 0, 1);
+    this.characterObject.quaternion.setFromAxisAngle(new THREE.Vector3(0, 1, 0), this.characterYRotation);
     this.characterObject.children[0].position.set(0, 93.9000015258789, 0);
     this.characterObject.updateMatrixWorld(true);
 

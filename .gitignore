@@ -26,5 +26,4 @@ dist-ssr
 # Gemini CLI
 .env
 /gemini
-/gemini_webpack
 GEMINI.md

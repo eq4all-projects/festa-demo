@@ -1,42 +1,37 @@
 import { useEffect, useRef } from "react";
 import WebGLPlayerClass from "../userInterface";
-import "../testPage.css";
-import { Button, TextField, Box } from "@mui/material";
-import { PlayArrow, Stop, Pause, Replay, Speed } from "@mui/icons-material";
 
 const sentences = {
-  "안녕하세요": "1085_W_안녕히계세요",
-  "나비": "9950_W_나비",
-  "기차": "319_W_열차",
-  "대화": "7067_W_대화",
-  "반가워요": "1700_W_희열",
-  "바다": "26690_G_바다",
-  "수어": "4940_W_수화",
-  "라면": "3138_W_국수",
-  "감사합니다": "25401_W_고맙다",
-  "집": "25996_G_집",
-  "좋다": "5025_W_좋다",
-  "커피": "26521_G_커피",
-  "사랑합니다": "27903_G_사랑해",
-  "아침": "4231_W_일출",
-  "자동차": "24932_W_자동차",
-  "빵": "2490_W_빵",
-  "존경합니다": "1556_W_존경",
-  "배": "4642_W_선박",
-  "농인": "13408_W_농아",
-  "휴대폰": "3086_W_휴대폰"
+  안녕하세요: "1085_W_안녕히계세요",
+  나비: "9950_W_나비",
+  기차: "319_W_열차",
+  대화: "7067_W_대화",
+  반가워요: "1700_W_희열",
+  바다: "26690_G_바다",
+  수어: "4940_W_수화",
+  라면: "3138_W_국수",
+  감사합니다: "25401_W_고맙다",
+  집: "25996_G_집",
+  좋다: "5025_W_좋다",
+  커피: "26521_G_커피",
+  사랑합니다: "27903_G_사랑해",
+  아침: "4231_W_일출",
+  자동차: "24932_W_자동차",
+  빵: "2490_W_빵",
+  존경합니다: "1556_W_존경",
+  배: "4642_W_선박",
+  농인: "13408_W_농아",
+  휴대폰: "3086_W_휴대폰",
 };
 
-const WebGLPlayer = () => {
+// eslint-disable-next-line react/prop-types
+const WebGLPlayer = ({ onBackToHome, previewMode = false }) => {
   const canvasRef = useRef(null);
 
   const playAnimation = async (ani_name) => {
-    await window.webGLPlayer.playAnimationByName(
-      ani_name,
-      (callback) => {
-        console.log(callback);
-      }
-    );
+    await window.webGLPlayer.playAnimationByName(ani_name, (callback) => {
+      console.log(callback);
+    });
   };
 
   const handleReplay = () => {
@@ -62,6 +57,14 @@ const WebGLPlayer = () => {
     window.webGLPlayer.changePlaySpeed(Number(speed));
   };
 
+  const handleRotateLeft = () => {
+    window.webGLPlayer.rotateLeft();
+  };
+
+  const handleRotateRight = () => {
+    window.webGLPlayer.rotateRight();
+  };
+
   useEffect(() => {
     let animationFrameId;
 
@@ -79,12 +82,14 @@ const WebGLPlayer = () => {
 
       const characterName = "Eve";
 
-      // playerInit이 완료될 때까지 기다립니다.
-      await webGLPlayer.playerInit(characterName, "Eve_IFC_mall", (callback) => {
-        console.log(callback, "ready");
-      });
+      await webGLPlayer.playerInit(
+        characterName,
+        "Eve_IFC_mall",
+        (callback) => {
+          console.log(callback, "ready");
+        }
+      );
 
-      // 초기화가 완료된 후에 렌더링 루프를 시작합니다.
       const render = () => {
         webGLPlayer.webGlRender();
         animationFrameId = requestAnimationFrame(render);
@@ -94,7 +99,6 @@ const WebGLPlayer = () => {
 
     initAndRender();
 
-    // 컴포넌트가 언마운트될 때 애니메이션 프레임을 정리합니다.
     return () => {
       if (animationFrameId) {
         cancelAnimationFrame(animationFrameId);
@@ -102,83 +106,106 @@ const WebGLPlayer = () => {
     };
   }, []);
 
+  if (previewMode) {
+    return (
+      <div className="w-full h-full">
+        <canvas ref={canvasRef} className="w-full h-full" />
+      </div>
+    );
+  }
+
   return (
-    <>
-      <Box
-        className="btn-controller"
-        display="flex"
-        flexDirection="row"
-        alignItems="flex-start"
-        m={3}
-      >
-        <Button
+    <div className="container mx-auto p-4">
+      {/* 헤더 */}
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-extra-bold text-brand-gray tracking-tighter">
+          Sign Master Challenge
+        </h1>
+        {onBackToHome && (
+          <button
+            onClick={onBackToHome}
+            className="px-4 py-2 text-white bg-gray-600 rounded-md hover:bg-gray-700 transition-colors"
+          >
+            ← 홈으로
+          </button>
+        )}
+      </div>
+
+      <div className="flex flex-wrap items-center gap-2 p-4 mb-4 bg-gray-100 rounded-lg shadow">
+        <button
           onClick={handleReplay}
-          variant="contained"
-          color="primary"
-          startIcon={<Replay />}
-          style={{ marginBottom: "8px" }}
+          className="px-4 py-2 font-semibold text-white bg-blue-600 rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
         >
           Replay
-        </Button>
-        <Button
+        </button>
+        <button
           onClick={handleStop}
-          variant="contained"
-          color="error"
-          startIcon={<Stop />}
-          style={{ marginBottom: "8px" }}
+          className="px-4 py-2 font-semibold text-white bg-red-600 rounded-md shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50"
         >
           Stop
-        </Button>
-        <Button
+        </button>
+        <button
           onClick={handlePause}
-          variant="contained"
-          color="warning"
-          startIcon={<Pause />}
-          style={{ marginBottom: "8px" }}
+          className="px-4 py-2 font-semibold text-white bg-yellow-500 rounded-md shadow-sm hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-opacity-50"
         >
           Pause
-        </Button>
-        <Button
+        </button>
+        <button
           onClick={handleResume}
-          variant="contained"
-          color="success"
-          startIcon={<PlayArrow />}
-          style={{ marginBottom: "8px" }}
+          className="px-4 py-2 font-semibold text-white bg-green-600 rounded-md shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50"
         >
           Resume
-        </Button>
-        <TextField
-          id="speed"
-          label="Speed"
-          variant="outlined"
-          placeholder="min:0.1 / max:3"
-          type="number"
-          inputProps={{ step: "0.1", min: "0.1", max: "3" }}
-          style={{ marginBottom: "8px", width: "150px" }}
-        />
-        <Button
-          onClick={handleChangeSpeed}
-          variant="contained"
-          color="info"
-          startIcon={<Speed />}
-          style={{ marginBottom: "8px" }}
-        >
-          Change speed
-        </Button>
-      </Box>
-      <div className="container">
-        <div>
-          {Object.entries(sentences).map(([text, data]) => (
-            <button key={text} onClick={() => playAnimation(data)}>
-              {text}
-            </button>
-          ))}
+        </button>
+        <div className="flex items-center gap-2">
+          <input
+            id="speed"
+            type="number"
+            step="0.1"
+            min="0.1"
+            max="3"
+            placeholder="Speed (0.1-3)"
+            className="w-32 px-3 py-2 text-gray-700 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          />
+          <button
+            onClick={handleChangeSpeed}
+            className="px-4 py-2 font-semibold text-white bg-indigo-600 rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50"
+          >
+            Set Speed
+          </button>
         </div>
-        <div id="canvasContainer">
-          <canvas ref={canvasRef} />
+        <button
+          onClick={handleRotateLeft}
+          className="px-4 py-2 font-semibold text-white bg-gray-600 rounded-md shadow-sm hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50"
+        >
+          Rotate Left
+        </button>
+        <button
+          onClick={handleRotateRight}
+          className="px-4 py-2 font-semibold text-white bg-gray-600 rounded-md shadow-sm hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50"
+        >
+          Rotate Right
+        </button>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="p-4 bg-white border border-gray-200 rounded-lg shadow-sm h-[800px] overflow-y-auto">
+          <div className="grid grid-cols-2 gap-2">
+            {Object.entries(sentences).map(([text, data]) => (
+              <button
+                key={text}
+                onClick={() => playAnimation(data)}
+                className="w-full p-3 text-left text-white bg-sky-500 rounded-md shadow-sm hover:bg-sky-600 focus:outline-none focus:ring-2 focus:ring-sky-400 focus:ring-opacity-50"
+              >
+                {text}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div className="relative w-full h-[800px] bg-gray-200 rounded-lg shadow-sm overflow-hidden">
+          <canvas ref={canvasRef} className="w-full h-full" />
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

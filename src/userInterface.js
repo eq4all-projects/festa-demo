@@ -64,14 +64,14 @@ export default class WebGLPlayer {
         this.initialColor.color,
         this.initialColor.alpha
       );
-      if (!!callback) {
+      if (callback) {
         // callback(1);
         callback({ status: 1, message: "avatar load success" });
         this.webGLPlayer.removeTimeout();
       }
     } catch (e) {
       // console.log(e);
-      if (!!callback) {
+      if (callback) {
         // callback(5);
         callback({ status: 5, message: "error: avatar load fail" });
       }
@@ -157,6 +157,14 @@ export default class WebGLPlayer {
     );
   }
 
+  async rotateLeft() {
+    await this.webGLPlayer.rotateLeft();
+  }
+
+  async rotateRight() {
+    await this.webGLPlayer.rotateRight();
+  }
+
   // 함수추가
   // 2024.04.11 scene 메모리 해제
   async unloadFBXModel() {
@@ -185,7 +193,7 @@ export default class WebGLPlayer {
 
   async removeSceneAndChildren(obj) {
     for (let i = obj.children.length - 1; i >= 0; i--) {
-      removeObjectsWithChildren(obj.children[i]);
+      this.removeObjectsWithChildren(obj.children[i]);
     }
 
     if (obj.geometry) {
