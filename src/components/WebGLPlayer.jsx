@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import WebGLPlayerClass from "../userInterface";
 
 const sentences = {
@@ -24,74 +24,103 @@ const sentences = {
   휴대폰: "3086_W_휴대폰",
 };
 
-// eslint-disable-next-line react/prop-types
-const WebGLPlayer = ({ onBackToHome, previewMode = false }) => {
-  const canvasRef = useRef(null);
+export const playableWords = Object.keys(sentences);
 
+// eslint-disable-next-line react/prop-types
+const WebGLPlayer = ({
+  onBackToHome,
+  previewMode = false,
+  sentence,
+  animationName,
+}) => {
+  const canvasRef = useRef(null);
+  const playerRef = useRef(null);
+  const loopTimeoutRef = useRef(null);
+  const [isPlayerReady, setIsPlayerReady] = useState(false);
+
+  // 수동 재생을 위한 함수 (반복 없음)
   const playAnimation = async (ani_name) => {
-    await window.webGLPlayer.playAnimationByName(ani_name, (callback) => {
-      console.log(callback);
-    });
+    if (playerRef.current) {
+      if (loopTimeoutRef.current) {
+        clearTimeout(loopTimeoutRef.current);
+      }
+      await playerRef.current.playAnimationByName(ani_name, (callback) => {
+        console.log(callback);
+      });
+    }
   };
 
   const handleReplay = () => {
-    window.webGLPlayer.replay((callback) => {
-      console.log(callback);
-    });
+    if (playerRef.current) {
+      playerRef.current.replay((callback) => {
+        console.log(callback);
+      });
+    }
   };
 
   const handleStop = () => {
-    window.webGLPlayer.stop();
+    if (playerRef.current) {
+      if (loopTimeoutRef.current) {
+        clearTimeout(loopTimeoutRef.current);
+      }
+      playerRef.current.stop();
+    }
   };
 
   const handlePause = () => {
-    window.webGLPlayer.pause();
+    if (playerRef.current) {
+      playerRef.current.pause();
+    }
   };
 
   const handleResume = () => {
-    window.webGLPlayer.resume();
+    if (playerRef.current) {
+      playerRef.current.resume();
+    }
   };
 
   const handleChangeSpeed = () => {
     const speed = document.getElementById("speed").value;
-    window.webGLPlayer.changePlaySpeed(Number(speed));
+    if (playerRef.current) {
+      playerRef.current.changePlaySpeed(Number(speed));
+    }
   };
 
   const handleRotateLeft = () => {
-    window.webGLPlayer.rotateLeft();
+    if (playerRef.current) {
+      playerRef.current.rotateLeft();
+    }
   };
 
   const handleRotateRight = () => {
-    window.webGLPlayer.rotateRight();
+    if (playerRef.current) {
+      playerRef.current.rotateRight();
+    }
   };
 
+  // WebGL 플레이어 초기화 Effect
   useEffect(() => {
     let animationFrameId;
 
     const initAndRender = async () => {
       const canvas = canvasRef.current;
-      if (!canvas) {
-        return;
-      }
+      if (!canvas) return;
 
       const webGLPlayer = new WebGLPlayerClass(canvas, {
         color: 0xffffff,
         alpha: 0.6,
       });
-      window.webGLPlayer = webGLPlayer;
+      playerRef.current = webGLPlayer;
 
-      const characterName = "Eve";
-
-      await webGLPlayer.playerInit(
-        characterName,
-        "Eve_IFC_mall",
-        (callback) => {
-          console.log(callback, "ready");
-        }
-      );
+      await webGLPlayer.playerInit("Eve", "Eve", (callback) => {
+        console.log(callback, "ready");
+        setIsPlayerReady(true);
+      });
 
       const render = () => {
-        webGLPlayer.webGlRender();
+        if (playerRef.current) {
+          playerRef.current.webGlRender();
+        }
         animationFrameId = requestAnimationFrame(render);
       };
       render();
@@ -100,11 +129,52 @@ const WebGLPlayer = ({ onBackToHome, previewMode = false }) => {
     initAndRender();
 
     return () => {
-      if (animationFrameId) {
-        cancelAnimationFrame(animationFrameId);
+      cancelAnimationFrame(animationFrameId);
+      if (loopTimeoutRef.current) {
+        clearTimeout(loopTimeoutRef.current);
+      }
+      if (playerRef.current) {
+        playerRef.current.unloadFBXModel();
+        playerRef.current = null;
       }
     };
   }, []);
+
+  // 자동 재생 Effect (sentence 또는 animationName 기반)
+  useEffect(() => {
+    if (!isPlayerReady) return;
+
+    const ani_name_to_play = animationName || sentences[sentence];
+
+    if (ani_name_to_play) {
+      const playLoop = () => {
+        if (playerRef.current) {
+          playerRef.current.playAnimationByName(
+            ani_name_to_play,
+            (callback) => {
+              console.log(callback);
+              // sentence 기반의 previewMode일 때만 반복
+              if (callback.status === 1 && previewMode) {
+                loopTimeoutRef.current = setTimeout(playLoop, 2500);
+              }
+            }
+          );
+        }
+      };
+
+      const initialPlayTimeout = setTimeout(playLoop, 800);
+
+      return () => {
+        clearTimeout(initialPlayTimeout);
+        if (loopTimeoutRef.current) {
+          clearTimeout(loopTimeoutRef.current);
+        }
+        if (playerRef.current) {
+          playerRef.current.stop();
+        }
+      };
+    }
+  }, [isPlayerReady, sentence, animationName, previewMode]);
 
   if (previewMode) {
     return (

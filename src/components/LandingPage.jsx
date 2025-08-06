@@ -1,23 +1,23 @@
-import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import WebGLPlayer from "./WebGLPlayer";
 import logo from "../assets/logo.png";
 
 const LandingPage = () => {
-  const [showGame, setShowGame] = useState(false);
+  const navigate = useNavigate();
 
   const handleStart = () => {
-    setShowGame(true);
+    navigate("/tutorial");
   };
-
-  if (showGame) {
-    return <WebGLPlayer onBackToHome={() => setShowGame(false)} />;
-  }
 
   return (
     <div className="min-h-screen bg-brand-bg relative">
       {/* EQ4ALL 로고 */}
       <div className="absolute top-8 right-8">
-        <img src={logo} alt="EQ4ALL" className="h-12 w-auto" />
+        <img
+          src={logo}
+          alt="EQ4ALL"
+          className="h-10 w-auto filter brightness-0"
+        />
       </div>
 
       {/* 메인 콘텐츠 - 5:5 비율 */}

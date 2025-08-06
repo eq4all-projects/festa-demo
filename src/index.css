@@ -88,3 +88,18 @@
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 }
+
+@layer utilities {
+  .timer-progress-circle {
+    animation: countdown 10s linear forwards;
+  }
+
+  @keyframes countdown {
+    from {
+      stroke-dashoffset: 0;
+    }
+    to {
+      stroke-dashoffset: 264; /* 2 * pi * 42 */
+    }
+  }
+}
