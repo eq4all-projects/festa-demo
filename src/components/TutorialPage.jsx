@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
-import logo from "../assets/logo.png";
+import logo from "../assets/logo-white.png";
 import keycap from "../assets/tutorial/keycap.png";
 import arrow from "../assets/tutorial/arrow.png";
 import number from "../assets/tutorial/number.png";
@@ -97,11 +97,7 @@ const TutorialPage = () => {
     <div className="min-h-screen bg-[#5A80CB] relative overflow-hidden">
       {/* EQ4ALL 로고 */}
       <div className="absolute top-8 right-8 z-10">
-        <img
-          src={logo}
-          alt="EQ4ALL"
-          className="h-10 w-auto filter brightness-0"
-        />
+        <img src={logo} alt="EQ4ALL" className="h-10 w-auto" />
       </div>
 
       {/* 메인 콘텐츠 */}

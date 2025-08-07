@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import WebGLPlayer, { playableWords } from "./WebGLPlayer";
+import WebGLPlayer, { hardWords } from "./WebGLPlayer";
 import logo from "../assets/logo.png";
 
 // 배열을 섞는 함수 (Fisher-Yates shuffle)
@@ -13,7 +13,7 @@ const shuffleArray = (array) => {
   return newArray;
 };
 
-const EasyModePage = () => {
+const HardModePage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const isRetry = location.state?.isRetry || false;
@@ -26,7 +26,7 @@ const EasyModePage = () => {
 
   // 문제 생성 및 설정
   useEffect(() => {
-    const allWords = playableWords;
+    const allWords = hardWords;
     const shuffledWords = shuffleArray(allWords);
     const selectedOptions = shuffledWords.slice(0, 3).map((word, index) => ({
       id: index + 1,
@@ -79,7 +79,7 @@ const EasyModePage = () => {
       // 0.5초 후 결과 페이지로 이동 (선택 효과를 보여주기 위함)
       setTimeout(() => {
         if (option.text === correctAnswer) {
-          navigate("/success");
+          navigate("/final");
         } else {
           if (isRetry) {
             navigate("/final-fail");
@@ -183,7 +183,7 @@ const EasyModePage = () => {
         <div className="w-[50%] flex flex-col justify-center items-center">
           <div className="mb-14 text-center">
             <div className="w-fit mx-auto bg-[#5A80CB] text-white px-8 py-2 rounded-4xl font-bold text-lg mb-4">
-              EASY MODE
+              HARD MODE
             </div>
             <p className="text-4xl font-bold text-black leading-relaxed tracking-tighter mt-8">
               왼쪽 수어를 보고 맞는 뜻을 골라주세요
@@ -197,7 +197,7 @@ const EasyModePage = () => {
                 onClick={() => handleAnswerSelect(option)}
                 className={`flex justify-center items-center mx-auto w-75 px-6 py-5 text-2xl font-bold rounded-4xl transition-all duration-300 active:scale-95 ${
                   selectedAnswer === option.id
-                    ? "text-white bg-[#5A80CB] shadow-[inset_4px_4px_8px_rgba(0,0,0,0.2),inset_-4px_-4px_8px_rgba(255,255,255,0.3)]"
+                    ? "text-white bg-[#E74C3C] shadow-[inset_4px_4px_8px_rgba(0,0,0,0.2),inset_-4px_-4px_8px_rgba(255,255,255,0.3)]"
                     : "bg-[#F0F0F3] text-black shadow-[8px_8px_16px_rgba(163,177,198,0.6),-8px_-8px_16px_rgba(255,255,255,0.8)] hover:shadow-[6px_6px_12px_rgba(163,177,198,0.6),-6px_-6px_12px_rgba(255,255,255,0.8)] active:shadow-[inset_8px_8px_16px_rgba(163,177,198,0.6),inset_-8px_-8px_16px_rgba(255,255,255,0.8)]"
                 }`}
                 disabled={selectedAnswer !== null} // 한 번 선택하면 비활성화
@@ -212,4 +212,4 @@ const EasyModePage = () => {
   );
 };
 
-export default EasyModePage;
+export default HardModePage;

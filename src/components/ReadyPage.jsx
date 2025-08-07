@@ -1,13 +1,28 @@
 import logo from "../assets/logo.png";
 import TryangleIcon from "../assets/tutorial/tryangle.svg?react";
 import { useNavigate } from "react-router-dom";
+import { useEffect, useCallback } from "react";
 
 const ReadyPage = () => {
   const navigate = useNavigate();
 
-  const handleNext = () => {
+  const handleNext = useCallback(() => {
     navigate("/easy-mode");
-  };
+  }, [navigate]);
+
+  useEffect(() => {
+    const handleKeyPress = (event) => {
+      if (event.key >= "1" && event.key <= "6") {
+        handleNext();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyPress);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyPress);
+    };
+  }, [handleNext]);
 
   return (
     <div className="min-h-screen bg-[#F0F0F3] relative">

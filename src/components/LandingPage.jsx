@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import WebGLPlayer from "./WebGLPlayer";
 import logo from "../assets/logo.png";
@@ -9,8 +10,26 @@ const LandingPage = () => {
     navigate("/tutorial");
   };
 
+  const handleNext = () => {
+    navigate("/tutorial");
+  };
+
+  useEffect(() => {
+    const handleKeyPress = (event) => {
+      if (event.key >= "1" && event.key <= "6") {
+        handleNext();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyPress);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyPress);
+    };
+  }, [handleNext]);
+
   return (
-    <div className="min-h-screen bg-brand-bg relative">
+    <div className="min-h-screen bg-[#F0F0F3] relative">
       {/* EQ4ALL 로고 */}
       <div className="absolute top-8 right-8">
         <img

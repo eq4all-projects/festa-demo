@@ -16,8 +16,7 @@ export default {
           "10px 10px 30px 0px rgba(174, 174, 192, 0.4), -10px -10px 30px 0px rgba(255, 255, 255, 1)",
         "button-shadow":
           "0 12px 24px rgba(107, 115, 255, 0.4), 0 6px 12px rgba(107, 115, 255, 0.2)",
-        custom:
-          "5px 5px 10px #d1d9e6, -5px -5px 10px #ffffff",
+        custom: "5px 5px 10px #d1d9e6, -5px -5px 10px #ffffff",
       },
       fontWeight: {
         "extra-bold": "800",

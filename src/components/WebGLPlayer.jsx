@@ -24,7 +24,21 @@ const sentences = {
   휴대폰: "3086_W_휴대폰",
 };
 
+const hardSentences = {
+  축하해요: "1826_W_축하",
+  미안해요: "6009_W_죄송하다",
+  알았어요: "4214_W_인식",
+  모르겠어요: "13619_W_모르다",
+  대단해요: "27587_G_대단하다",
+  맛있어요: "3194_W_맛나다",
+  행복해요: "1066_W_행복",
+  잘했어요: "31043_G_잘하다",
+  수영하다: "3839_W_헤엄",
+  수고했어요: "29075_G_수고힘들다",
+};
+
 export const playableWords = Object.keys(sentences);
+export const hardWords = Object.keys(hardSentences);
 
 // eslint-disable-next-line react/prop-types
 const WebGLPlayer = ({
@@ -107,7 +121,7 @@ const WebGLPlayer = ({
       if (!canvas) return;
 
       const webGLPlayer = new WebGLPlayerClass(canvas, {
-        color: 0xffffff,
+        color: "#F0F0F3",
         alpha: 0.6,
       });
       playerRef.current = webGLPlayer;
@@ -144,7 +158,8 @@ const WebGLPlayer = ({
   useEffect(() => {
     if (!isPlayerReady) return;
 
-    const ani_name_to_play = animationName || sentences[sentence];
+    const allSentences = { ...sentences, ...hardSentences };
+    const ani_name_to_play = animationName || allSentences[sentence];
 
     if (ani_name_to_play) {
       const playLoop = () => {
