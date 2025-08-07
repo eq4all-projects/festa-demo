@@ -48,10 +48,10 @@ const SuccessPage = () => {
       </p>
       <div className="flex space-x-6">
         <button className="px-16 py-4 text-xl font-bold text-white bg-[#5A80CB] rounded-3xl shadow-lg hover:bg-[#4A6FBB] transition-all duration-300">
-          ㄱㄱ
+          넹
         </button>
         <button className="px-16 py-4 text-xl font-bold text-white bg-[#5A80CB] rounded-3xl shadow-lg hover:bg-[#4A6FBB] transition-all duration-300">
-          ㄱㅊ
+          집에 갈래요
         </button>
       </div>
     </div>

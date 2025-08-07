@@ -89,13 +89,7 @@ const HardModePage = () => {
         }
       }, 500);
     },
-    [
-      correctAnswer,
-      navigate,
-      selectedAnswer,
-      isRetry,
-      location.pathname,
-    ]
+    [correctAnswer, navigate, selectedAnswer, isRetry, location.pathname]
   );
 
   // 키패드 입력 핸들러
@@ -197,7 +191,7 @@ const HardModePage = () => {
                 onClick={() => handleAnswerSelect(option)}
                 className={`flex justify-center items-center mx-auto w-75 px-6 py-5 text-2xl font-bold rounded-4xl transition-all duration-300 active:scale-95 ${
                   selectedAnswer === option.id
-                    ? "text-white bg-[#E74C3C] shadow-[inset_4px_4px_8px_rgba(0,0,0,0.2),inset_-4px_-4px_8px_rgba(255,255,255,0.3)]"
+                    ? "text-white bg-[#5A80CB] shadow-[inset_4px_4px_8px_rgba(0,0,0,0.2),inset_-4px_-4px_8px_rgba(255,255,255,0.3)]"
                     : "bg-[#F0F0F3] text-black shadow-[8px_8px_16px_rgba(163,177,198,0.6),-8px_-8px_16px_rgba(255,255,255,0.8)] hover:shadow-[6px_6px_12px_rgba(163,177,198,0.6),-6px_-6px_12px_rgba(255,255,255,0.8)] active:shadow-[inset_8px_8px_16px_rgba(163,177,198,0.6),inset_-8px_-8px_16px_rgba(255,255,255,0.8)]"
                 }`}
                 disabled={selectedAnswer !== null} // 한 번 선택하면 비활성화
