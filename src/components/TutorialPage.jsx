@@ -7,7 +7,7 @@ import number from "../assets/tutorial/number.png";
 
 const TutorialPage = () => {
   const navigate = useNavigate();
-  const [timeLeft, setTimeLeft] = useState(1000000);
+  const [timeLeft, setTimeLeft] = useState(5);
 
   // 애니메이션 상태 관리
   const [showDescription, setShowDescription] = useState(false);
@@ -19,6 +19,11 @@ const TutorialPage = () => {
   const [hideImage, setHideImage] = useState(false);
   const [showPhase2Keyboard, setShowPhase2Keyboard] = useState(false);
   const [showPhase2Number, setShowPhase2Number] = useState(false);
+
+  // 타이머 프로그레스 바 설정
+  const radius = 42;
+  const circumference = 2 * Math.PI * radius;
+  const strokeDashoffset = circumference * (1 - timeLeft / 5);
 
   // 타이머 관리 - 페이즈 2 number 이미지가 표시될 때 시작
   useEffect(() => {
@@ -48,18 +53,18 @@ const TutorialPage = () => {
     // 2초 후 키보드 이미지 보여주기
     const keyboardTimer = setTimeout(() => {
       setShowKeyboard(true);
-    }, 3000);
+    }, 3500);
 
     // 3초 후 number 이미지로 교체
     const arrowTimer = setTimeout(() => {
       setShowArrow(true);
-    }, 5000);
+    }, 4500);
 
     // 5초 후 페이즈 1 종료 (기존 설명 텍스트와 이미지 숨기기)
     const hidePhase1Timer = setTimeout(() => {
       setHideOldDescription(true);
       setHideImage(true);
-    }, 8000);
+    }, 7500);
 
     // 5.5초 후 페이즈 2 텍스트 시작
     const showPhase2TextTimer = setTimeout(() => {
@@ -69,12 +74,12 @@ const TutorialPage = () => {
     // 12초 후 페이즈 2 keycap 이미지 시작 (텍스트 표시 3.5초 후)
     const showPhase2KeycapTimer = setTimeout(() => {
       setShowPhase2Keyboard(true);
-    }, 12000);
+    }, 10500);
 
     // 14초 후 페이즈 2 number 이미지로 교체 (keycap 표시 2초 후)
     const showPhase2NumberTimer = setTimeout(() => {
       setShowPhase2Number(true);
-    }, 14000);
+    }, 12000);
 
     // 컴포넌트 언마운트 시 타이머 정리
     return () => {
@@ -102,7 +107,7 @@ const TutorialPage = () => {
       {/* 메인 콘텐츠 */}
       <div className="flex flex-col justify-center items-center min-h-screen px-6 md:px-12 lg:px-20 relative z-10">
         {/* Tutorial 제목 */}
-        <div className="mb-8">
+        <div className="mb-10">
           <div className="bg-brand-gray rounded-[50px] px-8 md:px-10 lg:px-12 py-3 md:py-4">
             <span className="cursor-pointer px-18 py-4 text-3xl font-bold text-[#5A80CB] bg-[#F0F0F3] rounded-4xl">
               챌린지, 이렇게 참여해요
@@ -120,11 +125,10 @@ const TutorialPage = () => {
                 : "opacity-0 translate-y-5 invisible"
             }`}
           >
-            <p className="text-2xl md:text-2xl lg:text-3xl text-[#F0F0F3] font-base mb-2 tracking-tight">
-              방향키를 누르시면 <strong>아바타를 좌우로 회전</strong>하여 볼 수
-              있습니다
+            <p className="text-2xl md:text-2xl lg:text-3xl text-[#F0F0F3] font-bold mb-2 tracking-tight">
+              방향키를 누르시면 아바타를 좌우로 회전하여 볼 수 있습니다
             </p>
-            <p className="text-2xl md:text-2xl lg:text-3xl text-[#F0F0F3] font-base tracking-tight">
+            <p className="text-2xl md:text-2xl lg:text-3xl text-[#F0F0F3] font-bold tracking-tight">
               단, 가운데 버튼을 누를 시 원위치로 돌아옵니다
             </p>
           </div>
@@ -138,7 +142,7 @@ const TutorialPage = () => {
             }`}
           >
             <p className="text-2xl md:text-2xl lg:text-3xl text-[#F0F0F3] font-base mb-2 tracking-tight">
-              각 선택지 앞에 <strong>번호가 부여</strong>되어 있습니다
+              각 선택지 앞에 번호가 부여되어 있습니다
             </p>
             <p className="text-2xl md:text-2xl lg:text-3xl text-[#F0F0F3] font-base tracking-tight">
               제시되는 수어 영상을 보고 정답이라고 생각되는 선택지의 번호를
@@ -149,7 +153,7 @@ const TutorialPage = () => {
           {/* 높이 유지를 위한 투명한 placeholder */}
           <div className="opacity-0">
             <p className="text-2xl md:text-2xl lg:text-3xl text-[#F0F0F3] font-base mb-2 tracking-tight">
-              각 선택지 앞에 <strong>번호가 부여</strong>되어 있습니다
+              각 선택지 앞에 번호가 부여되어 있습니다
             </p>
             <p className="text-2xl md:text-2xl lg:text-3xl text-[#F0F0F3] font-base tracking-tight">
               제시되는 수어 영상을 보고 정답이라고 생각되는 선택지의 번호를
@@ -186,42 +190,44 @@ const TutorialPage = () => {
         </div>
 
         {/* 타이머 */}
-        <div className="absolute bottom-8 right-8">
-          <div className="relative w-20 h-20">
-            <svg className="w-full h-full" viewBox="0 0 100 100">
-              {/* Background circle */}
-              <circle
-                className="text-[#D9E1EF]"
-                strokeWidth="15"
-                stroke="currentColor"
-                fill="transparent"
-                r="42"
-                cx="50"
-                cy="50"
-              />
-              {/* Progress circle */}
-              <circle
-                className="text-[#698FD7] timer-progress-circle"
-                strokeWidth="15"
-                strokeDasharray={2 * Math.PI * 42}
-                strokeDashoffset="0"
-                strokeLinecap="round"
-                stroke="currentColor"
-                fill="transparent"
-                r="42"
-                cx="50"
-                cy="50"
-                transform="rotate(-90 50 50)"
-              />
-            </svg>
-            {/* Timer number */}
-            <div className="absolute inset-0 flex items-center justify-center">
-              <span className="text-[#D9E1EF] text-4xl font-extrabold">
-                {timeLeft}
-              </span>
+        {showPhase2Number && (
+          <div className="absolute bottom-8 right-8">
+            <div className="relative w-20 h-20">
+              <svg className="w-full h-full" viewBox="0 0 100 100">
+                {/* Background circle */}
+                <circle
+                  className="text-[#81A4E9]"
+                  strokeWidth="15"
+                  stroke="currentColor"
+                  fill="transparent"
+                  r={radius}
+                  cx="50"
+                  cy="50"
+                />
+                {/* Progress circle */}
+                <circle
+                  className="text-[#D9E1EF] transition-all duration-1000 ease-linear"
+                  strokeWidth="15"
+                  strokeDasharray={circumference}
+                  strokeDashoffset={strokeDashoffset}
+                  strokeLinecap="round"
+                  stroke="currentColor"
+                  fill="transparent"
+                  r={radius}
+                  cx="50"
+                  cy="50"
+                  transform="rotate(-90 50 50)"
+                />
+              </svg>
+              {/* Timer number */}
+              <div className="absolute inset-0 flex items-center justify-center">
+                <span className="text-[#D9E1EF] text-4xl font-extrabold">
+                  {timeLeft}
+                </span>
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

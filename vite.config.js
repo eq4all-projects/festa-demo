@@ -1,10 +1,11 @@
 import { defineConfig } from "vite";
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
+import svgr from "vite-plugin-svgr";
 import { resolve } from "path";
 
 export default defineConfig({
-  plugins: [react(), tailwindcss()],
+  plugins: [react(), tailwindcss({ config: "./tailwind.config.js" }), svgr()],
   root: "src",
   build: {
     outDir: "../dist",
