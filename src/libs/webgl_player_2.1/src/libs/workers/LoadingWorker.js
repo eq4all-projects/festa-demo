@@ -1,4 +1,5 @@
 import * as _ from "lodash";
+import axios from "axios";
 import { apiDispatcher } from "../APIs";
 import { WebGLPlayerConfig } from "../WebGLPlayerConfig";
 
