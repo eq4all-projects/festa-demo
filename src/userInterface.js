@@ -158,11 +158,35 @@ export default class WebGLPlayer {
   }
 
   async rotateLeft() {
-    await this.webGLPlayer.rotateLeft();
+    if (this.webGLPlayer) {
+      // 좌우 최대 90도 제한 (-π/2 ~ π/2)
+      const minRotation = -Math.PI / 2; // -90도
+      const rotationStep = Math.PI / 12; // 15도
+
+      if (this.webGLPlayer.characterYRotation > minRotation) {
+        this.webGLPlayer.characterYRotation -= rotationStep;
+        // 최소값보다 작아지지 않도록 제한
+        if (this.webGLPlayer.characterYRotation < minRotation) {
+          this.webGLPlayer.characterYRotation = minRotation;
+        }
+      }
+    }
   }
 
   async rotateRight() {
-    await this.webGLPlayer.rotateRight();
+    if (this.webGLPlayer) {
+      // 좌우 최대 90도 제한 (-π/2 ~ π/2)
+      const maxRotation = Math.PI / 2; // 90도
+      const rotationStep = Math.PI / 12; // 15도
+
+      if (this.webGLPlayer.characterYRotation < maxRotation) {
+        this.webGLPlayer.characterYRotation += rotationStep;
+        // 최대값보다 커지지 않도록 제한
+        if (this.webGLPlayer.characterYRotation > maxRotation) {
+          this.webGLPlayer.characterYRotation = maxRotation;
+        }
+      }
+    }
   }
 
   async resetCameraRotation() {
