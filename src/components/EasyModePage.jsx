@@ -1,6 +1,7 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import WebGLPlayer, { playableWords } from "./WebGLPlayer";
+import { useBGM } from "../contexts/BGMContext";
 import logo from "../assets/logo.png";
 
 // 배열을 섞는 함수 (Fisher-Yates shuffle)
@@ -17,12 +18,25 @@ const EasyModePage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const isRetry = location.state?.isRetry || false;
+  const { setPageContext, playCountdown, stopCountdown } = useBGM();
+  const webGLPlayerRef = useRef(null);
 
   const [options, setOptions] = useState([]);
   const [correctAnswer, setCorrectAnswer] = useState("");
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [timeLeft, setTimeLeft] = useState(10);
   const [showTimer, setShowTimer] = useState(false);
+
+  // BGM 볼륨 조절 (퀴즈 페이지용)
+  useEffect(() => {
+    setPageContext("easy-mode");
+
+    // 컴포넌트 언마운트 시 기본 볼륨으로 복원 및 카운트다운 사운드 정지
+    return () => {
+      setPageContext("default");
+      stopCountdown();
+    };
+  }, [setPageContext, stopCountdown]);
 
   // 문제 생성 및 설정
   useEffect(() => {
@@ -44,7 +58,7 @@ const EasyModePage = () => {
     // 10초 후에 타이머를 표시하고 카운트다운 시작
     const timerVisibilityTimeout = setTimeout(() => {
       setShowTimer(true);
-    }, 10000);
+    }, 100000000000000);
 
     return () => clearTimeout(timerVisibilityTimeout);
   }, []);
@@ -54,6 +68,7 @@ const EasyModePage = () => {
     if (!showTimer) return;
 
     if (timeLeft === 0) {
+      stopCountdown(); // 타이머 종료 시 카운트다운 사운드 정지
       if (isRetry) {
         navigate("/final-fail");
       } else {
@@ -62,12 +77,25 @@ const EasyModePage = () => {
       return;
     }
 
+    // 5초 남았을 때 카운트다운 사운드 재생
+    if (timeLeft === 5) {
+      playCountdown();
+    }
+
     const countdownInterval = setInterval(() => {
       setTimeLeft((prevTime) => prevTime - 1);
     }, 1000);
 
     return () => clearInterval(countdownInterval);
-  }, [showTimer, timeLeft, navigate, isRetry, location.pathname]);
+  }, [
+    showTimer,
+    timeLeft,
+    navigate,
+    isRetry,
+    location.pathname,
+    playCountdown,
+    stopCountdown,
+  ]);
 
   // 정답 선택 핸들러
   const handleAnswerSelect = useCallback(
@@ -75,6 +103,7 @@ const EasyModePage = () => {
       if (!option || selectedAnswer) return; // 이미 선택했다면 중복 실행 방지
 
       setSelectedAnswer(option.id);
+      stopCountdown(); // 정답 선택 시 카운트다운 사운드 정지
 
       // 0.5초 후 결과 페이지로 이동 (선택 효과를 보여주기 위함)
       setTimeout(() => {
@@ -95,12 +124,28 @@ const EasyModePage = () => {
       selectedAnswer,
       isRetry,
       location.pathname,
+      stopCountdown,
     ]
   );
 
   // 키패드 입력 핸들러
   useEffect(() => {
     const handleKeyPress = (event) => {
+      // WebGL 플레이어 제어 키
+      if (event.key === "1" && webGLPlayerRef.current) {
+        webGLPlayerRef.current.rotateLeft();
+        return;
+      }
+      if (event.key === "2" && webGLPlayerRef.current) {
+        webGLPlayerRef.current.resetPosition();
+        return;
+      }
+      if (event.key === "3" && webGLPlayerRef.current) {
+        webGLPlayerRef.current.rotateRight();
+        return;
+      }
+
+      // 퀴즈 선택 키
       const keyMap = {
         4: 0, // 키패드 4 -> 보기 1 (options 배열의 0번 인덱스)
         5: 1, // 키패드 5 -> 보기 2 (options 배열의 1번 인덱스)
@@ -173,10 +218,16 @@ const EasyModePage = () => {
       {/* 메인 콘텐츠 */}
       <div className="flex w-full h-full min-h-screen">
         {/* 왼쪽 WebGL 영역 */}
-        <div className="w-[50%] flex justify-center items-center bg-brand-bg px-12">
-          {correctAnswer && (
-            <WebGLPlayer sentence={correctAnswer} previewMode={true} />
-          )}
+        <div className="w-[50%] flex justify-center items-center bg-brand-bg min-h-screen">
+          <div className="w-full h-full max-w-full max-h-full">
+            {correctAnswer && (
+              <WebGLPlayer
+                ref={webGLPlayerRef}
+                sentence={correctAnswer}
+                previewMode={true}
+              />
+            )}
+          </div>
         </div>
 
         {/* 오른쪽 콘텐츠 영역 */}

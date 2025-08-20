@@ -1,9 +1,16 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import logo from "../assets/logo.png";
+import { useBGM } from "../contexts/BGMContext";
+import sugeoVideo from "../assets/video/수고.mp4";
 
 const FinalFailPage = () => {
   const navigate = useNavigate();
+  const { setPageContext } = useBGM();
+
+  // 최종 실패 페이지는 기본 볼륨으로 설정
+  useEffect(() => {
+    setPageContext("final-fail");
+  }, [setPageContext]);
 
   const goToHome = () => {
     navigate("/");
@@ -30,31 +37,18 @@ const FinalFailPage = () => {
   }, [goToHome]);
 
   return (
-    <div className="min-h-screen bg-brand-bg relative flex flex-col justify-center items-center">
-      {/* EQ4ALL 로고 */}
-      <div className="absolute top-8 right-8">
-        <img
-          src={logo}
-          alt="EQ4ALL"
-          className="h-10 w-auto filter brightness-0"
-        />
-      </div>
-
-      {/* 메인 콘텐츠 */}
-      <div className="text-center">
-        <p className="text-5xl font-bold text-brand-gray mb-8">
-          영상으로 대체 - 그래도 멋진 도전이었어요.
-        </p>
-        <p className="text-2xl text-brand-gray mb-12">
-          다음 기회에 꼭 성공해보세요
-        </p>
-        <button
-          onClick={goToHome}
-          className="cursor-pointer px-24 py-5 text-2xl font-bold text-white bg-[#5A80CB] rounded-4xl shadow-lg hover:bg-[#4A6FBB] transition-all duration-300 active:scale-95"
-        >
-          홈으로 돌아가기
-        </button>
-      </div>
+    <div className="min-h-screen relative">
+      <video
+        src={sugeoVideo}
+        autoPlay
+        muted
+        loop
+        playsInline
+        className="w-full h-screen object-cover"
+        style={{ backgroundColor: "#000" }}
+      />
+      {/* 비디오 위에 투명한 오버레이로 키 이벤트 감지 */}
+      <div className="absolute inset-0 bg-transparent" />
     </div>
   );
 };

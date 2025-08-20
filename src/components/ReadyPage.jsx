@@ -2,9 +2,16 @@ import logo from "../assets/logo.png";
 import TryangleIcon from "../assets/tutorial/tryangle.svg?react";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useCallback } from "react";
+import { useBGM } from "../contexts/BGMContext";
 
 const ReadyPage = () => {
   const navigate = useNavigate();
+  const { setPageContext } = useBGM();
+
+  // 준비페이지는 기본 볼륨으로 설정
+  useEffect(() => {
+    setPageContext("ready");
+  }, [setPageContext]);
 
   const handleNext = useCallback(() => {
     navigate("/easy-mode");

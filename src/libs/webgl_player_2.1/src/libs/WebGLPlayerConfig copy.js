@@ -173,8 +173,8 @@ class WebGLPlayerConfig {
 
   getAvatarStructureAPI(avatarName) {
     const avatarMap = {
-      AzureService: "/service-api/retrieve-customavatar/",
-      NKS: "/service-api/retrieve-customavatar/",
+      AzureService: "service-api/retrieve-customavatar/",
+      NKS: "service-api/retrieve-customavatar/",
       "CMS2.0": `avatars/structure/${avatarName}`,
       webOS: "/json/customAvatar.json",
       museum: "service-api/retrieve-customavatar/",
@@ -252,7 +252,7 @@ class WebGLPlayerConfig {
   healthCheckAPI() {
     if (this.system === "AzureService") {
       return {
-        url: "/service-api/retrieve-customavatar/",
+        url: "service-api/retrieve-customavatar/",
         data: {
           type: 13,
           search: "Eve",

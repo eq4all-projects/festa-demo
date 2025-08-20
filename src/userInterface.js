@@ -26,14 +26,14 @@ export default class WebGLPlayer {
       camera: null,
       cameraOffset: 1,
       cameraDistance: 210,
-      cameraZoomLevel: 1,
+      cameraZoomLevel: 1.1,
       cameraFOV: 35,
       cameraFar: 5000,
       cameraNear: 0.3,
       cameraXTarget: 0,
       cameraYTarget: 165,
       camerasSetting: null,
-      orbitControlsTarget: [0, 147, 0],
+      orbitControlsTarget: [0, 135, 0],
     };
 
     try {
@@ -163,6 +163,12 @@ export default class WebGLPlayer {
 
   async rotateRight() {
     await this.webGLPlayer.rotateRight();
+  }
+
+  async resetCameraRotation() {
+    if (this.webGLPlayer) {
+      this.webGLPlayer.characterYRotation = 0;
+    }
   }
 
   // 함수추가

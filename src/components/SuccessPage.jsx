@@ -1,12 +1,21 @@
-import { useEffect } from "react";
+import { useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
+import { useBGM } from "../contexts/BGMContext";
+import jeongdapVideo from "../assets/video/정답.mp4";
 
 const SuccessPage = () => {
   const navigate = useNavigate();
+  const { setPageContext, playSuccessSound } = useBGM();
 
-  const handleNext = () => {
+  useEffect(() => {
+    setPageContext("success");
+    // 페이지 진입 시 성공 사운드 재생
+    playSuccessSound();
+  }, [setPageContext, playSuccessSound]);
+
+  const handleNext = useCallback(() => {
     navigate("/hard-mode");
-  };
+  }, [navigate]);
 
   useEffect(() => {
     const handleKeyPress = (event) => {
@@ -22,14 +31,14 @@ const SuccessPage = () => {
     };
   }, [handleNext]);
 
-  const handleHome = () => {
-    navigate("/");
-  };
+  const handleExit = useCallback(() => {
+    navigate("/final-fail");
+  }, [navigate]);
 
   useEffect(() => {
     const handleKeyPress = (event) => {
       if (event.key === "5") {
-        handleHome();
+        handleExit();
       }
     };
 
@@ -38,22 +47,19 @@ const SuccessPage = () => {
     return () => {
       window.removeEventListener("keydown", handleKeyPress);
     };
-  }, [handleHome]);
+  }, [handleExit]);
 
   return (
-    <div className="min-h-screen bg-green-100 flex flex-col justify-center items-center">
-      <h1 className="text-5xl font-bold text-green-700 mb-8">정답입니다!</h1>
-      <p className="text-2xl text-green-600 mb-12">
-        다음 문제도 도전하시겠어요?
-      </p>
-      <div className="flex space-x-6">
-        <button className="px-16 py-4 text-xl font-bold text-white bg-[#5A80CB] rounded-3xl shadow-lg hover:bg-[#4A6FBB] transition-all duration-300">
-          넹
-        </button>
-        <button className="px-16 py-4 text-xl font-bold text-white bg-[#5A80CB] rounded-3xl shadow-lg hover:bg-[#4A6FBB] transition-all duration-300">
-          집에 갈래요
-        </button>
-      </div>
+    <div className="min-h-screen relative">
+      <video
+        src={jeongdapVideo}
+        autoPlay
+        muted
+        loop
+        className="w-full h-screen object-cover"
+      />
+      {/* 비디오 위에 투명한 오버레이로 키 이벤트 감지 */}
+      <div className="absolute inset-0 bg-transparent" />
     </div>
   );
 };

@@ -1,13 +1,20 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import { useCallback, useEffect, useState } from "react";
-import logo from "../assets/logo.png";
-import WebGLPlayer from "./WebGLPlayer";
+import { useBGM } from "../contexts/BGMContext";
+import odapVideo from "../assets/video/오답.mp4";
 
 const FailurePage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const from = location.state?.from || "/"; // 이전 페이지 경로
   const [selectedButton, setSelectedButton] = useState(null);
+  const { setPageContext, playFailSound } = useBGM();
+
+  useEffect(() => {
+    setPageContext("failure");
+    // 페이지 진입 시 실패 사운드 재생
+    playFailSound();
+  }, [setPageContext, playFailSound]);
 
   const handleGoodChoice = useCallback(() => {
     if (selectedButton) return;
@@ -41,67 +48,18 @@ const FailurePage = () => {
   }, [handleGoodChoice, handleOkayChoice, selectedButton]);
 
   return (
-    <div className="min-h-screen bg-[#F0F0F3] relative">
-      {/* EQ4ALL 로고 */}
-      <div className="absolute top-8 right-8">
-        <img
-          src={logo}
-          alt="EQ4ALL"
-          className="h-10 w-auto filter brightness-0"
-        />
-      </div>
-
-      {/* 메인 콘텐츠 */}
-      <div className="flex w-full h-full min-h-screen">
-        <div className="w-[50%] flex justify-center items-center bg-brand-bg px-12">
-          <WebGLPlayer animationName={"2147_W_애석"} previewMode={true} />
-        </div>
-        <div className="w-[50%] flex flex-col justify-center items-center px-12">
-          {/* 메인 텍스트 */}
-          <div className="mb-16 text-center">
-            <p className="text-4xl font-bold text-brand-gray leading-relaxed tracking-tighter mb-4">
-              아쉽지만 다음 기회에...
-            </p>
-            <p className="text-2xl font-extralight text-brand-gray leading-relaxed tracking-tighter">
-              한 번 더 도전하시겠어요?
-            </p>
-          </div>
-
-          {/* 선택 버튼들 */}
-          <div className="flex space-x-6 w-[65%] gap-12">
-            <button
-              onClick={handleGoodChoice}
-              disabled={selectedButton !== null}
-              className={`flex-1 px-6 py-4 text-2xl font-semibold text-white bg-[#5A80CB] rounded-4xl transition-all duration-300 active:scale-95 ${
-                selectedButton === "good"
-                  ? "ring-4 ring-offset-2 ring-blue-400"
-                  : ""
-              }`}
-              style={{
-                boxShadow:
-                  "10px 10px 30px 0px rgba(174, 174, 192, 0.4), -10px -10px 30px 0px rgba(255, 255, 255, 1)",
-              }}
-            >
-              1. 좋아요
-            </button>
-            <button
-              onClick={handleOkayChoice}
-              disabled={selectedButton !== null}
-              className={`flex-1 px-6 py-4 text-2xl font-semibold text-white bg-[#676767] rounded-4xl transition-all duration-300 active:scale-95 ${
-                selectedButton === "okay"
-                  ? "ring-4 ring-offset-2 ring-gray-400"
-                  : ""
-              }`}
-              style={{
-                boxShadow:
-                  "10px 10px 30px 0px rgba(174, 174, 192, 0.4), -10px -10px 30px 0px rgba(255, 255, 255, 1)",
-              }}
-            >
-              2. 괜찮아요
-            </button>
-          </div>
-        </div>
-      </div>
+    <div className="min-h-screen relative">
+      <video
+        src={odapVideo}
+        autoPlay
+        muted
+        loop
+        playsInline
+        className="w-full h-screen object-cover"
+        style={{ backgroundColor: "#000" }}
+      />
+      {/* 비디오 위에 투명한 오버레이로 키 이벤트 감지 */}
+      <div className="absolute inset-0 bg-transparent" />
     </div>
   );
 };

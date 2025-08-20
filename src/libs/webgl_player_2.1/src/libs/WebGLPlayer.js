@@ -24,7 +24,7 @@ export default class WebGLPlayer {
     isBlendingPage
   ) {
     // Loader
-    this.characterFileExt = "glb";
+    this.characterFileExt = "glb"; // 모든 캐릭터 GLB 사용
     this.gltfLoader = new GLTFLoader();
     this.fbxLoader = new FBXLoader();
     this.textureLoader = new THREE.TextureLoader();
@@ -133,13 +133,13 @@ export default class WebGLPlayer {
     this.characterYRotation = 0;
   }
 
-    rotateLeft() {
-        this.characterYRotation -= Math.PI / 12; // 15 degrees
-    }
+  rotateLeft() {
+    this.characterYRotation -= Math.PI / 12; // 15 degrees
+  }
 
-    rotateRight() {
-        this.characterYRotation += Math.PI / 12; // 15 degrees
-    }
+  rotateRight() {
+    this.characterYRotation += Math.PI / 12; // 15 degrees
+  }
 
   /**
    *  매 프레임마다 반복. 캔버스에 렌더링해주는 역할
@@ -281,7 +281,10 @@ export default class WebGLPlayer {
     this.webGLMixer.mixer.update(this.delta);
 
     this.characterObject.position.set(0, 0, 0);
-    this.characterObject.quaternion.setFromAxisAngle(new THREE.Vector3(0, 1, 0), this.characterYRotation);
+    this.characterObject.quaternion.setFromAxisAngle(
+      new THREE.Vector3(0, 1, 0),
+      this.characterYRotation
+    );
     this.characterObject.children[0].position.set(0, 93.9000015258789, 0);
     this.characterObject.updateMatrixWorld(true);
 
@@ -1091,35 +1094,35 @@ export default class WebGLPlayer {
 
   async playAnimationByName(ani_name, callback) {
     const gloss = {
-        sl_composition: {
-            sData: [
+      sl_composition: {
+        sData: [
+          {
+            wAttribute: 12, // Animation type
+            word: ani_name,
+            sl_composition: {
+              data: [
                 {
-                    wAttribute: 12, // Animation type
-                    word: ani_name,
-                    sl_composition: {
-                        data: [
-                            {
-                                ani_name: ani_name,
-                                attribute: 2, // Sign Language Animation
-                                Exit_Time: -1,
-                                Speed: [1],
-                                Transition_Duration: -1,
-                                Transition_Offset: -1,
-                                ani_id: -1,
-                                origin_info: " ",
-                                selected_word: "",
-                                variable_id: -1,
-                                variable_type: -1,
-                                parentIndex: 0,
-                                pauseStartDuration: 0,
-                                pauseEndDuration: 0,
-                                speed: [1],
-                            },
-                        ],
-                    },
+                  ani_name: ani_name,
+                  attribute: 2, // Sign Language Animation
+                  Exit_Time: -1,
+                  Speed: [1],
+                  Transition_Duration: -1,
+                  Transition_Offset: -1,
+                  ani_id: -1,
+                  origin_info: " ",
+                  selected_word: "",
+                  variable_id: -1,
+                  variable_type: -1,
+                  parentIndex: 0,
+                  pauseStartDuration: 0,
+                  pauseEndDuration: 0,
+                  speed: [1],
                 },
-            ],
-        },
+              ],
+            },
+          },
+        ],
+      },
     };
     await this.setSentence([gloss], 0.3, "Ani", null, callback);
   }
