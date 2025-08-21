@@ -12,7 +12,7 @@ import WebGLPlayerClass from "../userInterface";
 const CHARACTER_AVATARS = {
   Eve: ["Eve_사가페01", "Eve_사가페02"],
   Adam: ["Adam_사가페01", "Adam_사가페02"],
-  Jonathan: ["akaoB_Jonathan_Suit01"],
+  // Jonathan: ["akaoB_Jonathan_Suit01"],
   // Clara: ["Clara_사가페"],
 };
 
