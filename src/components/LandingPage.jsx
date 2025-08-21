@@ -1,4 +1,4 @@
-import { useEffect, useCallback } from "react";
+import { useEffect, useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useBGM } from "../contexts/BGMContext";
 import introVideo from "../assets/video/intro.webm";
@@ -6,6 +6,7 @@ import introVideo from "../assets/video/intro.webm";
 const LandingPage = () => {
   const navigate = useNavigate();
   const { setPageContext } = useBGM();
+  const [hasNavigated, setHasNavigated] = useState(false);
 
   // 랜딩페이지는 기본 볼륨으로 설정
   useEffect(() => {
@@ -13,11 +14,16 @@ const LandingPage = () => {
   }, [setPageContext]);
 
   const handleNext = useCallback(() => {
-    navigate("/ready");
-  }, [navigate]);
+    if (hasNavigated) return; // 이미 이동했다면 중복 실행 방지
+    setHasNavigated(true);
+    navigate("/easy-mode");
+  }, [navigate, hasNavigated]);
 
+  // 키 입력 핸들러 (디바운싱 처리)
   useEffect(() => {
     const handleKeyPress = (event) => {
+      if (hasNavigated) return; // 이미 이동했다면 무시
+
       if (event.key >= "1" && event.key <= "6") {
         handleNext();
       }
@@ -28,7 +34,7 @@ const LandingPage = () => {
     return () => {
       window.removeEventListener("keydown", handleKeyPress);
     };
-  }, [handleNext]);
+  }, [handleNext, hasNavigated]);
 
   return (
     <div className="min-h-screen relative">

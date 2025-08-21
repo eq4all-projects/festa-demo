@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useBGM } from "../contexts/BGMContext";
 import sugeoVideo from "../assets/video/수고.webm";
@@ -6,24 +6,49 @@ import sugeoVideo from "../assets/video/수고.webm";
 const FinalFailPage = () => {
   const navigate = useNavigate();
   const { setPageContext } = useBGM();
+  const timeoutRef = useRef(null);
+  const [hasNavigated, setHasNavigated] = useState(false);
 
   // 최종 실패 페이지는 기본 볼륨으로 설정
   useEffect(() => {
     setPageContext("final-fail");
   }, [setPageContext]);
 
-  const goToHome = () => {
+  const goToHome = useCallback(() => {
+    if (hasNavigated) return; // 이미 이동했다면 중복 실행 방지
+
+    setHasNavigated(true);
+
+    // 타이머가 있다면 정리
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+
     navigate("/");
-  };
+  }, [navigate, hasNavigated]);
 
+  // 10초 후 자동 홈 이동 타이머
   useEffect(() => {
-    setTimeout(() => {
-      navigate("/");
-    }, 5000);
-  }, [navigate]);
+    timeoutRef.current = setTimeout(() => {
+      if (!hasNavigated) {
+        setHasNavigated(true);
+        navigate("/");
+      }
+    }, 10000);
 
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, [navigate, hasNavigated]);
+
+  // 키 입력 핸들러 (디바운싱 처리)
   useEffect(() => {
     const handleKeyPress = (event) => {
+      if (hasNavigated) return; // 이미 이동했다면 무시
+
       if (event.key >= "1" && event.key <= "6") {
         goToHome();
       }
@@ -34,7 +59,7 @@ const FinalFailPage = () => {
     return () => {
       window.removeEventListener("keydown", handleKeyPress);
     };
-  }, [goToHome]);
+  }, [hasNavigated, goToHome]);
 
   return (
     <div className="min-h-screen relative">

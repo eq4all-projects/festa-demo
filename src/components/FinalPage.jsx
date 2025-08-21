@@ -1,5 +1,5 @@
 // 최종 성공 페이지
-import { useEffect } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useBGM } from "../contexts/BGMContext";
 import wanlyoVideo from "../assets/video/완료.webm";
@@ -7,18 +7,60 @@ import wanlyoVideo from "../assets/video/완료.webm";
 const FinalPage = () => {
   const navigate = useNavigate();
   const { setPageContext } = useBGM();
+  const timeoutRef = useRef(null);
+  const [hasNavigated, setHasNavigated] = useState(false);
 
   // 최종 성공 페이지는 기본 볼륨으로 설정
   useEffect(() => {
     setPageContext("final");
   }, [setPageContext]);
 
-  // 10초 후 / 홈으로 이동
+  const goToHome = useCallback(() => {
+    if (hasNavigated) return; // 이미 이동했다면 중복 실행 방지
+
+    setHasNavigated(true);
+
+    // 타이머가 있다면 정리
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+
+    navigate("/");
+  }, [navigate, hasNavigated]);
+
+  // 10초 후 자동 홈 이동 타이머
   useEffect(() => {
-    setTimeout(() => {
-      navigate("/");
+    timeoutRef.current = setTimeout(() => {
+      if (!hasNavigated) {
+        setHasNavigated(true);
+        navigate("/");
+      }
     }, 10000);
-  }, [navigate]);
+
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, [navigate, hasNavigated]);
+
+  // 키 입력 핸들러 (디바운싱 처리) - 일관성을 위해 추가
+  useEffect(() => {
+    const handleKeyPress = (event) => {
+      if (hasNavigated) return; // 이미 이동했다면 무시
+
+      if (event.key >= "1" && event.key <= "6") {
+        goToHome();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyPress);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyPress);
+    };
+  }, [hasNavigated]);
 
   return (
     <div className="min-h-screen relative">

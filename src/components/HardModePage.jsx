@@ -130,22 +130,34 @@ const HardModePage = () => {
 
   // 키패드 입력 핸들러
   useEffect(() => {
+    let lastKeyPressTime = 0;
+    const DEBOUNCE_DELAY = 200; // 200ms 디바운싱
+
     const handleKeyPress = (event) => {
-      // WebGL 플레이어 제어 키
-      if (event.key === "1" && webGLPlayerRef.current) {
-        webGLPlayerRef.current.rotateLeft();
-        return;
-      }
-      if (event.key === "2" && webGLPlayerRef.current) {
-        webGLPlayerRef.current.resetPosition();
-        return;
-      }
-      if (event.key === "3" && webGLPlayerRef.current) {
-        webGLPlayerRef.current.rotateRight();
-        return;
+      const currentTime = Date.now();
+
+      // WebGL 플레이어 제어 키 (디바운싱 적용)
+      if (event.key >= "1" && event.key <= "3") {
+        if (currentTime - lastKeyPressTime < DEBOUNCE_DELAY) {
+          return; // 디바운싱: 너무 빠른 연속 입력 무시
+        }
+        lastKeyPressTime = currentTime;
+
+        if (event.key === "1" && webGLPlayerRef.current) {
+          webGLPlayerRef.current.rotateLeft();
+          return;
+        }
+        if (event.key === "2" && webGLPlayerRef.current) {
+          webGLPlayerRef.current.resetPosition();
+          return;
+        }
+        if (event.key === "3" && webGLPlayerRef.current) {
+          webGLPlayerRef.current.rotateRight();
+          return;
+        }
       }
 
-      // 퀴즈 선택 키
+      // 퀴즈 선택 키 (이미 selectedAnswer로 중복 방지됨)
       const keyMap = {
         4: 0, // 키패드 4 -> 보기 1 (options 배열의 0번 인덱스)
         5: 1, // 키패드 5 -> 보기 2 (options 배열의 1번 인덱스)

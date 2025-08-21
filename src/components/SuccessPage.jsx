@@ -1,4 +1,4 @@
-import { useEffect, useCallback } from "react";
+import { useEffect, useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useBGM } from "../contexts/BGMContext";
 import jeongdapVideo from "../assets/video/정답.webm";
@@ -6,6 +6,7 @@ import jeongdapVideo from "../assets/video/정답.webm";
 const SuccessPage = () => {
   const navigate = useNavigate();
   const { setPageContext, playSuccessSound } = useBGM();
+  const [hasNavigated, setHasNavigated] = useState(false);
 
   useEffect(() => {
     setPageContext("success");
@@ -14,30 +15,25 @@ const SuccessPage = () => {
   }, [setPageContext, playSuccessSound]);
 
   const handleNext = useCallback(() => {
+    if (hasNavigated) return; // 이미 이동했다면 중복 실행 방지
+    setHasNavigated(true);
     navigate("/hard-mode");
-  }, [navigate]);
-
-  useEffect(() => {
-    const handleKeyPress = (event) => {
-      if (event.key === "4") {
-        handleNext();
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyPress);
-
-    return () => {
-      window.removeEventListener("keydown", handleKeyPress);
-    };
-  }, [handleNext]);
+  }, [navigate, hasNavigated]);
 
   const handleExit = useCallback(() => {
+    if (hasNavigated) return; // 이미 이동했다면 중복 실행 방지
+    setHasNavigated(true);
     navigate("/final-fail");
-  }, [navigate]);
+  }, [navigate, hasNavigated]);
 
+  // 통합된 키 입력 핸들러 (디바운싱 처리)
   useEffect(() => {
     const handleKeyPress = (event) => {
-      if (event.key === "5") {
+      if (hasNavigated) return; // 이미 이동했다면 무시
+
+      if (event.key === "4") {
+        handleNext();
+      } else if (event.key === "5") {
         handleExit();
       }
     };
@@ -47,7 +43,7 @@ const SuccessPage = () => {
     return () => {
       window.removeEventListener("keydown", handleKeyPress);
     };
-  }, [handleExit]);
+  }, [handleNext, handleExit, hasNavigated]);
 
   return (
     <div className="min-h-screen relative">

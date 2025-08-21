@@ -2,7 +2,7 @@ import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import { useEffect } from "react";
 import LandingPage from "./components/LandingPage";
 // import TutorialPage from "./components/TutorialPage";
-import ReadyPage from "./components/ReadyPage";
+// import ReadyPage from "./components/ReadyPage";
 import EasyModePage from "./components/EasyModePage";
 import HardModePage from "./components/HardModePage";
 import WebGLPlayer from "./components/WebGLPlayer";
@@ -29,7 +29,7 @@ const App = () => {
     <Routes>
       <Route path="/" element={<LandingPage />} />
       {/* <Route path="/tutorial" element={<TutorialPage />} /> */}
-      <Route path="/ready" element={<ReadyPage />} />
+      {/* <Route path="/ready" element={<ReadyPage />} /> */}
       <Route path="/easy-mode" element={<EasyModePage />} />
       <Route path="/hard-mode" element={<HardModePage />} />
       <Route path="/success" element={<SuccessPage />} />
