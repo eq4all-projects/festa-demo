@@ -1,7 +1,7 @@
 import { useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useBGM } from "../contexts/BGMContext";
-import introVideo from "../assets/video/intro.mp4";
+import introVideo from "../assets/video/intro.webm";
 
 const LandingPage = () => {
   const navigate = useNavigate();

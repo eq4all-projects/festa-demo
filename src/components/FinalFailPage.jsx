@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useBGM } from "../contexts/BGMContext";
-import sugeoVideo from "../assets/video/수고.mp4";
+import sugeoVideo from "../assets/video/수고.webm";
 
 const FinalFailPage = () => {
   const navigate = useNavigate();

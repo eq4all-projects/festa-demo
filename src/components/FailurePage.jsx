@@ -1,7 +1,7 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import { useCallback, useEffect, useState } from "react";
 import { useBGM } from "../contexts/BGMContext";
-import odapVideo from "../assets/video/오답.mp4";
+import odapVideo from "../assets/video/오답.webm";
 
 const FailurePage = () => {
   const navigate = useNavigate();

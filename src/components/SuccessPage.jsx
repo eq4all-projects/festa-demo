@@ -1,7 +1,7 @@
 import { useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useBGM } from "../contexts/BGMContext";
-import jeongdapVideo from "../assets/video/정답.mp4";
+import jeongdapVideo from "../assets/video/정답.webm";
 
 const SuccessPage = () => {
   const navigate = useNavigate();

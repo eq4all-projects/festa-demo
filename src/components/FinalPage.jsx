@@ -2,7 +2,7 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useBGM } from "../contexts/BGMContext";
-import wanlyoVideo from "../assets/video/완료.mp4";
+import wanlyoVideo from "../assets/video/완료.webm";
 
 const FinalPage = () => {
   const navigate = useNavigate();

@@ -27,8 +27,8 @@ dist-ssr
 .env
 /gemini
 GEMINI.md
-src/assets/video/수고.mp4
-src/assets/video/오답.mp4
-src/assets/video/완료.mp4
-src/assets/video/정답.mp4
-src/assets/video/intro.mp4
+src/assets/video/수고.webm
+src/assets/video/오답.webm
+src/assets/video/완료.webm
+src/assets/video/정답.webm
+src/assets/video/intro.webm
