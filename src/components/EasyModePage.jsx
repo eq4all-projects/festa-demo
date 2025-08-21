@@ -58,7 +58,7 @@ const EasyModePage = () => {
     // 10초 후에 타이머를 표시하고 카운트다운 시작
     const timerVisibilityTimeout = setTimeout(() => {
       setShowTimer(true);
-    }, 1000);
+    }, 10000);
 
     return () => clearTimeout(timerVisibilityTimeout);
   }, []);
