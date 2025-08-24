@@ -131,7 +131,7 @@ const EasyModePage = () => {
   // 키패드 입력 핸들러
   useEffect(() => {
     let lastKeyPressTime = 0;
-    const DEBOUNCE_DELAY = 200; // 200ms 디바운싱
+    const DEBOUNCE_DELAY = 500; // 500ms 디바운싱
 
     const handleKeyPress = (event) => {
       const currentTime = Date.now();
@@ -245,10 +245,10 @@ const EasyModePage = () => {
         {/* 오른쪽 콘텐츠 영역 */}
         <div className="w-[50%] flex flex-col justify-center items-center">
           <div className="mb-14 text-center">
-            <div className="w-fit mx-auto bg-[#5A80CB] text-white px-8 py-2 rounded-4xl font-bold text-lg mb-4">
+            <div className="w-fit mx-auto bg-[#5A80CB] text-white px-8 py-2 rounded-4xl font-bold text-2xl mb-4">
               EASY MODE
             </div>
-            <p className="text-4xl font-bold text-black leading-relaxed tracking-tighter mt-8">
+            <p className="text-5xl font-bold text-black leading-relaxed tracking-tighter mt-8">
               왼쪽 수어를 보고 맞는 뜻을 골라주세요
             </p>
           </div>
@@ -258,7 +258,7 @@ const EasyModePage = () => {
               <button
                 key={option.id}
                 onClick={() => handleAnswerSelect(option)}
-                className={`flex justify-center items-center mx-auto w-75 px-6 py-5 text-2xl font-bold rounded-4xl transition-all duration-300 active:scale-95 ${
+                className={`flex justify-center items-center mx-auto w-75 px-8 py-5 text-3xl font-bold rounded-4xl transition-all duration-300 active:scale-95 ${
                   selectedAnswer === option.id
                     ? "text-white bg-[#5A80CB] shadow-[inset_4px_4px_8px_rgba(0,0,0,0.2),inset_-4px_-4px_8px_rgba(255,255,255,0.3)]"
                     : "bg-[#F0F0F3] text-black shadow-[8px_8px_16px_rgba(163,177,198,0.6),-8px_-8px_16px_rgba(255,255,255,0.8)] hover:shadow-[6px_6px_12px_rgba(163,177,198,0.6),-6px_-6px_12px_rgba(255,255,255,0.8)] active:shadow-[inset_8px_8px_16px_rgba(163,177,198,0.6),inset_-8px_-8px_16px_rgba(255,255,255,0.8)]"

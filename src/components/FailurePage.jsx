@@ -8,6 +8,7 @@ const FailurePage = () => {
   const location = useLocation();
   const from = location.state?.from || "/"; // 이전 페이지 경로
   const [selectedButton, setSelectedButton] = useState(null);
+  const [isReady, setIsReady] = useState(false); // 그레이스 피리어드용 상태
   const { setPageContext, playFailSound } = useBGM();
 
   useEffect(() => {
@@ -15,6 +16,15 @@ const FailurePage = () => {
     // 페이지 진입 시 실패 사운드 재생
     playFailSound();
   }, [setPageContext, playFailSound]);
+
+  // 그레이스 피리어드: 페이지 마운트 후 500ms 후에 키 입력 활성화
+  useEffect(() => {
+    const gracePeriodTimer = setTimeout(() => {
+      setIsReady(true);
+    }, 500);
+
+    return () => clearTimeout(gracePeriodTimer);
+  }, []);
 
   const handleGoodChoice = useCallback(() => {
     if (selectedButton) return;
@@ -29,9 +39,19 @@ const FailurePage = () => {
     setTimeout(() => navigate("/final-fail"), 500);
   }, [navigate, selectedButton]);
 
+  // 키 입력 핸들러 (향상된 디바운싱 처리)
   useEffect(() => {
+    let lastKeyPressTime = 0;
+    const DEBOUNCE_DELAY = 500; // 500ms 디바운싱
+
     const handleKeyPress = (event) => {
-      if (selectedButton) return;
+      if (!isReady || selectedButton) return; // 그레이스 피리어드 중이거나 이미 선택했다면 무시
+
+      const currentTime = Date.now();
+      if (currentTime - lastKeyPressTime < DEBOUNCE_DELAY) {
+        return; // 너무 빠른 연속 입력 무시
+      }
+      lastKeyPressTime = currentTime;
 
       if (event.key === "4") {
         handleGoodChoice();
@@ -45,7 +65,7 @@ const FailurePage = () => {
     return () => {
       window.removeEventListener("keydown", handleKeyPress);
     };
-  }, [handleGoodChoice, handleOkayChoice, selectedButton]);
+  }, [handleGoodChoice, handleOkayChoice, selectedButton, isReady]);
 
   return (
     <div className="min-h-screen relative">
