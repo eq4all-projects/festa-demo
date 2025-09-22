@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import WebGLPlayer, { hardWords } from "./WebGLPlayer";
 import { useBGM } from "../contexts/BGMContext";
+import { hardModeQueue } from "../utils/problemQueue";
 import logo from "../assets/logo.png";
 
 // 배열을 섞는 함수 (Fisher-Yates shuffle)
@@ -38,10 +39,22 @@ const HardModePage = () => {
     };
   }, [setPageContext, stopCountdown]);
 
-  // 문제 생성 및 설정
+  // 문제 생성 및 설정 (큐 시스템 적용)
   useEffect(() => {
     const allWords = hardWords;
-    const shuffledWords = shuffleArray(allWords);
+
+    // 큐에 없는 사용 가능한 문제들만 필터링
+    const availableWords = hardModeQueue.getAvailableProblems(allWords);
+
+    // 사용 가능한 문제가 3개 미만이면 전체 문제에서 선택 (큐 초기화)
+    const wordsToUse = availableWords.length >= 3 ? availableWords : allWords;
+
+    // 큐가 가득 찼을 때는 초기화
+    if (availableWords.length < 3) {
+      hardModeQueue.clear();
+    }
+
+    const shuffledWords = shuffleArray(wordsToUse);
     const selectedOptions = shuffledWords.slice(0, 3).map((word, index) => ({
       id: index + 1,
       text: word,
@@ -51,6 +64,9 @@ const HardModePage = () => {
     const randomCorrectAnswer =
       selectedOptions[Math.floor(Math.random() * selectedOptions.length)];
     setCorrectAnswer(randomCorrectAnswer.text);
+
+    // 정답을 큐에 추가 (중복 방지)
+    hardModeQueue.enqueue(randomCorrectAnswer.text);
   }, []);
 
   // 전체 타이머 로직 (20초)

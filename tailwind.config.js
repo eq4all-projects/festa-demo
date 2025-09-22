@@ -27,7 +27,7 @@ export default {
     },
     fontFamily: {
       sans: [
-        "Pretendard-Regular",
+        "Pretendard",
         "-apple-system",
         "BlinkMacSystemFont",
         "system-ui",
