@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
-import WebGLPlayer, { hardWords } from "./WebGLPlayer";
+import { useNavigate } from "react-router-dom";
+import WebGLPlayer, { hardWords, hardModeOptionGroups } from "./WebGLPlayer";
 import { useBGM } from "../contexts/BGMContext";
 import { hardModeQueue } from "../utils/problemQueue";
 import logo from "../assets/logo.png";
@@ -17,8 +17,6 @@ const shuffleArray = (array) => {
 
 const HardModePage = () => {
   const navigate = useNavigate();
-  const location = useLocation();
-  const isRetry = location.state?.isRetry || false;
   const { setPageContext, playCountdown, stopCountdown } = useBGM();
   const webGLPlayerRef = useRef(null);
 
@@ -44,29 +42,50 @@ const HardModePage = () => {
     const allWords = hardWords;
 
     // 큐에 없는 사용 가능한 문제들만 필터링
-    const availableWords = hardModeQueue.getAvailableProblems(allWords);
+    let availableWords = hardModeQueue.getAvailableProblems(allWords);
 
-    // 사용 가능한 문제가 3개 미만이면 전체 문제에서 선택 (큐 초기화)
-    const wordsToUse = availableWords.length >= 3 ? availableWords : allWords;
-
-    // 큐가 가득 찼을 때는 초기화
+    // 사용 가능한 문제가 3개 미만이면 큐를 초기화하고 다시 필터링
     if (availableWords.length < 3) {
       hardModeQueue.clear();
+      availableWords = hardModeQueue.getAvailableProblems(allWords);
     }
 
-    const shuffledWords = shuffleArray(wordsToUse);
-    const selectedOptions = shuffledWords.slice(0, 3).map((word, index) => ({
+    // 정답 선택 (큐에 없는 문제 중에서)
+    const shuffledWords = shuffleArray(availableWords);
+    const correctAnswer = shuffledWords[0];
+    setCorrectAnswer(correctAnswer);
+
+    // 정답의 보기 그룹에서 선택지 생성
+    const optionGroup = hardModeOptionGroups[correctAnswer] || [];
+    const shuffledOptions = shuffleArray(optionGroup);
+
+    // 정답 + 같은 그룹에서 랜덤 2개 선택
+    const selectedOptions = [
+      { id: 1, text: correctAnswer }, // 정답
+      { id: 2, text: shuffledOptions[0] }, // 그룹에서 랜덤 1개
+      { id: 3, text: shuffledOptions[1] }, // 그룹에서 랜덤 1개
+    ];
+
+    // 선택지 섞기
+    const finalOptions = shuffleArray(selectedOptions).map((option, index) => ({
+      ...option,
       id: index + 1,
-      text: word,
     }));
 
-    setOptions(selectedOptions);
-    const randomCorrectAnswer =
-      selectedOptions[Math.floor(Math.random() * selectedOptions.length)];
-    setCorrectAnswer(randomCorrectAnswer.text);
+    setOptions(finalOptions);
 
     // 정답을 큐에 추가 (중복 방지)
-    hardModeQueue.enqueue(randomCorrectAnswer.text);
+    hardModeQueue.enqueue(correctAnswer);
+
+    // 디버깅: 큐 상태 확인
+    console.log("=== Hard Mode Debug ===");
+    console.log("정답:", correctAnswer);
+    console.log("보기 그룹:", optionGroup);
+    console.log("선택지:", finalOptions);
+    console.log("현재 큐:", hardModeQueue.getQueue());
+    console.log("사용 가능한 문제 수:", availableWords.length);
+    console.log("전체 문제 수:", allWords.length);
+    console.log("========================");
   }, []);
 
   // 전체 타이머 로직 (20초)
@@ -85,11 +104,8 @@ const HardModePage = () => {
 
     if (timeLeft === 0) {
       stopCountdown(); // 타이머 종료 시 카운트다운 사운드 정지
-      if (isRetry) {
-        navigate("/final-fail");
-      } else {
-        navigate("/failure", { state: { from: location.pathname } });
-      }
+      // 하드모드에서는 항상 바로 FinalFailPage로 이동
+      navigate("/final-fail");
       return;
     }
 
@@ -103,15 +119,7 @@ const HardModePage = () => {
     }, 1000);
 
     return () => clearInterval(countdownInterval);
-  }, [
-    showTimer,
-    timeLeft,
-    navigate,
-    isRetry,
-    location.pathname,
-    playCountdown,
-    stopCountdown,
-  ]);
+  }, [showTimer, timeLeft, navigate, playCountdown, stopCountdown]);
 
   // 정답 선택 핸들러
   const handleAnswerSelect = useCallback(
@@ -126,22 +134,12 @@ const HardModePage = () => {
         if (option.text === correctAnswer) {
           navigate("/final");
         } else {
-          if (isRetry) {
-            navigate("/final-fail");
-          } else {
-            navigate("/failure", { state: { from: location.pathname } });
-          }
+          // 하드모드에서는 항상 바로 FinalFailPage로 이동
+          navigate("/final-fail");
         }
       }, 500);
     },
-    [
-      correctAnswer,
-      navigate,
-      selectedAnswer,
-      isRetry,
-      location.pathname,
-      stopCountdown,
-    ]
+    [correctAnswer, navigate, selectedAnswer, stopCountdown]
   );
 
   // 키패드 입력 핸들러

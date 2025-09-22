@@ -44,17 +44,15 @@ const EasyModePage = () => {
     const allWords = playableWords;
 
     // 큐에 없는 사용 가능한 문제들만 필터링
-    const availableWords = easyModeQueue.getAvailableProblems(allWords);
+    let availableWords = easyModeQueue.getAvailableProblems(allWords);
 
-    // 사용 가능한 문제가 3개 미만이면 전체 문제에서 선택 (큐 초기화)
-    const wordsToUse = availableWords.length >= 3 ? availableWords : allWords;
-
-    // 큐가 가득 찼을 때는 초기화
+    // 사용 가능한 문제가 3개 미만이면 큐를 초기화하고 다시 필터링
     if (availableWords.length < 3) {
       easyModeQueue.clear();
+      availableWords = easyModeQueue.getAvailableProblems(allWords);
     }
 
-    const shuffledWords = shuffleArray(wordsToUse);
+    const shuffledWords = shuffleArray(availableWords);
     const selectedOptions = shuffledWords.slice(0, 3).map((word, index) => ({
       id: index + 1,
       text: word,
@@ -67,6 +65,14 @@ const EasyModePage = () => {
 
     // 정답을 큐에 추가 (중복 방지)
     easyModeQueue.enqueue(randomCorrectAnswer.text);
+
+    // 디버깅: 큐 상태 확인
+    console.log("=== Easy Mode Debug ===");
+    console.log("정답:", randomCorrectAnswer.text);
+    console.log("현재 큐:", easyModeQueue.getQueue());
+    console.log("사용 가능한 문제 수:", availableWords.length);
+    console.log("전체 문제 수:", allWords.length);
+    console.log("========================");
   }, []);
 
   // 전체 타이머 로직 (20초)

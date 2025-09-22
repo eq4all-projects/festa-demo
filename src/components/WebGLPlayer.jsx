@@ -4,6 +4,7 @@ import {
   useState,
   forwardRef,
   useImperativeHandle,
+  useCallback,
 } from "react";
 import PropTypes from "prop-types";
 import WebGLPlayerClass from "../userInterface";
@@ -27,8 +28,8 @@ const getRandomCharacterAndAvatar = () => {
   return { character: randomCharacter, avatar: randomAvatar };
 };
 
-const sentences = {
-  사랑합니다: "27903_G_사랑해",
+const easySentences = {
+  사랑해요: "27903_G_사랑해",
   나비: "9950_W_나비",
   기차: "319_W_열차",
   대화: "7067_W_대화",
@@ -36,7 +37,7 @@ const sentences = {
   바다: "26690_G_바다",
   앉다: "13555_W_앉다",
   라면: "3138_W_국수",
-  존경합니다: "1556_W_존경",
+  존경해요: "1556_W_존경",
   집: "25996_G_집",
   좋다: "5025_W_좋다",
   커피: "26521_G_커피",
@@ -48,12 +49,9 @@ const sentences = {
   배: "4642_W_선박",
   달팽이: "11273_W_달팽이",
   휴대폰: "3086_W_휴대폰",
-};
-
-const hardSentences = {
   축하해요: "1826_W_축하",
   미안해요: "6009_W_죄송하다",
-  알았어요: "4214_W_인식",
+  알겠어요: "4214_W_인식",
   기억하다: "730_W_외우다",
   대단해요: "27587_G_대단하다",
   맛있어요: "3194_W_맛나다",
@@ -63,8 +61,95 @@ const hardSentences = {
   수고했어요: "29075_G_수고힘들다",
 };
 
-export const playableWords = Object.keys(sentences);
+const hardSentences = {
+  똑같다: "35367_G_똑같다",
+  처음: "35219_G_처음",
+  놀라다: "35226_G_놀라다",
+  할말없다: "35329_G_할말없다",
+  잊다: "35239_G_잊다",
+  계략: "35265_G_계략",
+  봤다: "35258_G_봤다",
+  슬럼프: "35253_G_슬럼프",
+  맛있다: "39943_G_맛있다",
+  알다: "35216_G_알다",
+  원망하다: "35228_G_원망",
+  단념: "35231_G_체념",
+  라이벌: "35238_G_원수",
+  낭패: "35251_G_낭패",
+  혐오: "35263_G_극혐",
+  당연하다: "35268_G_당연하다",
+  완벽하다: "35300_G_완벽하다",
+  기다리다: "35302_G_기다리다",
+  호흡: "35312_G_호흡",
+  감동이다: "39927_G_감동",
+};
+
+// 하드모드 보기 그룹 정의
+const hardModeOptionGroups = {
+  // 그룹 1: 옮기다, 다르다, 차이, 반대
+  똑같다: ["옮기다", "다르다", "차이", "반대"],
+
+  // 그룹 2: 냄새, 코가 시리다, 코감기
+  처음: ["냄새", "코가 시리다", "코감기"],
+
+  // 그룹 3: 하품하다, 설레다, 기쁘다, 부럽다
+  놀라다: ["하품하다", "설레다", "기쁘다", "부럽다"],
+
+  // 그룹 4: 대화하다, 발언하다, 주장하다
+  할말없다: ["대화하다", "발언하다", "주장하다"],
+
+  // 그룹 5: 망각하다, 집중하다, 기억하다, 떠올리다
+  잊다: ["망각하다", "집중하다", "기억하다", "떠올리다"],
+
+  // 그룹 6: 계산, 단순, 정직, 솔직
+  계략: ["계산", "단순", "정직", "솔직"],
+
+  // 그룹 7: 말하다, 듣다, 알았다
+  봤다: ["말하다", "듣다", "알았다"],
+
+  // 그룹 8: 활력, 즐거움, 의욕, 우울
+  슬럼프: ["활력", "즐거움", "의욕", "우울"],
+
+  // 그룹 9: 어지럽다, 코감기, 재미있다, 즐겁다
+  맛있다: ["어지럽다", "코감기", "재미있다", "즐겁다"],
+
+  // 그룹 10: 망각하다, 착각하다, 모르다
+  알다: ["망각하다", "착각하다", "모르다"],
+
+  // 그룹 11: 속상하다, 감사하다, 존경하다
+  원망하다: ["속상하다", "감사하다", "존경하다"],
+
+  // 그룹 12: 희망, 욕심, 기대, 낭패, 바람
+  단념: ["희망", "욕심", "기대", "낭패", "바람"],
+
+  // 그룹 13: 조언, 충언, 욕심
+  라이벌: ["조언", "충언", "욕심"],
+
+  // 그룹 14: 콧물, 성공, 부러움, 시기
+  낭패: ["콧물", "성공", "부러움", "시기"],
+
+  // 그룹 15: 목감기, 선호, 의심, 의문
+  혐오: ["목감기", "선호", "의심", "의문"],
+
+  // 그룹 16: 우연, 낯설다, 궁금하다
+  당연하다: ["우연", "낯설다", "궁금하다"],
+
+  // 그룹 17: 충치, 부족하다, 결함, 치과
+  완벽하다: ["충치", "부족하다", "결함", "치과"],
+
+  // 그룹 18: 감자, 포기하다, 맛있다
+  기다리다: ["감자", "포기하다", "맛있다"],
+
+  // 그룹 19: 침묵, 정지, 무언, 의견
+  호흡: ["침묵", "정지", "무언", "의견"],
+
+  // 그룹 20: 부럽다, 대단하다, 기다리다
+  감동이다: ["부럽다", "대단하다", "기다리다"],
+};
+
+export const playableWords = Object.keys(easySentences);
 export const hardWords = Object.keys(hardSentences);
+export { hardModeOptionGroups };
 
 const WebGLPlayer = forwardRef(
   ({ onBackToHome, previewMode = false, sentence, animationName }, ref) => {
@@ -73,6 +158,49 @@ const WebGLPlayer = forwardRef(
     const loopTimeoutRef = useRef(null);
     const [isPlayerReady, setIsPlayerReady] = useState(false);
 
+    // WebGL 콜백 처리 함수
+    const handleWebGLCallback = useCallback((callback, context = "unknown") => {
+      console.log(`[WebGL ${context}]`, callback);
+
+      // 오류 상태별 상세 처리
+      switch (callback.status) {
+        case 1: // play done
+          console.log(`✅ [WebGL ${context}] 애니메이션 재생 완료`);
+          break;
+        case 2: // play stop
+          console.log(`⏹️ [WebGL ${context}] 애니메이션 재생 중지`);
+          break;
+        case 3: // error: check request id
+          console.error(
+            `❌ [WebGL ${context}] 요청 ID 오류:`,
+            callback.message
+          );
+          console.error("해결 방법: 애니메이션 파일명을 확인하세요");
+          break;
+        case 4: // error: check variable id
+          console.error(
+            `❌ [WebGL ${context}] 변수 ID 오류:`,
+            callback.message
+          );
+          console.error("해결 방법: 애니메이션 변수 설정을 확인하세요");
+          break;
+        case 5: // error: unknown
+          console.error(
+            `❌ [WebGL ${context}] 알 수 없는 오류:`,
+            callback.message
+          );
+
+          // alert 표시하고 2초 후 자동 새로고침
+          alert("일시적인 오류가 발생하여 페이지를 새로고침합니다.");
+          setTimeout(() => {
+            window.location.reload();
+          }, 2000);
+          break;
+        default:
+          console.warn(`⚠️ [WebGL ${context}] 알 수 없는 상태:`, callback);
+      }
+    }, []);
+
     // 수동 재생을 위한 함수 (반복 없음)
     const playAnimation = async (ani_name) => {
       if (playerRef.current) {
@@ -80,7 +208,7 @@ const WebGLPlayer = forwardRef(
           clearTimeout(loopTimeoutRef.current);
         }
         await playerRef.current.playAnimationByName(ani_name, (callback) => {
-          console.log(callback);
+          handleWebGLCallback(callback, "playAnimation");
         });
       }
     };
@@ -88,7 +216,7 @@ const WebGLPlayer = forwardRef(
     const handleReplay = () => {
       if (playerRef.current) {
         playerRef.current.replay((callback) => {
-          console.log(callback);
+          handleWebGLCallback(callback, "replay");
         });
       }
     };
@@ -166,8 +294,10 @@ const WebGLPlayer = forwardRef(
         console.log(`Selected character: ${character}, avatar: ${avatar}`);
 
         await webGLPlayer.playerInit(character, avatar, (callback) => {
-          console.log(callback, "ready");
-          setIsPlayerReady(true);
+          handleWebGLCallback(callback, "ready");
+          if (callback.status === 1) {
+            setIsPlayerReady(true);
+          }
         });
 
         const render = () => {
@@ -197,7 +327,7 @@ const WebGLPlayer = forwardRef(
     useEffect(() => {
       if (!isPlayerReady) return;
 
-      const allSentences = { ...sentences, ...hardSentences };
+      const allSentences = { ...easySentences, ...hardSentences };
       const ani_name_to_play = animationName || allSentences[sentence];
 
       if (ani_name_to_play) {
@@ -206,7 +336,7 @@ const WebGLPlayer = forwardRef(
             playerRef.current.playAnimationByName(
               ani_name_to_play,
               (callback) => {
-                console.log(callback);
+                handleWebGLCallback(callback, "autoPlay");
                 // sentence 기반의 previewMode일 때만 반복
                 if (callback.status === 1 && previewMode) {
                   loopTimeoutRef.current = setTimeout(playLoop, 2500);
@@ -318,7 +448,7 @@ const WebGLPlayer = forwardRef(
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="p-4 bg-white border border-gray-200 rounded-lg shadow-sm h-[800px] overflow-y-auto">
             <div className="grid grid-cols-2 gap-2">
-              {Object.entries(sentences).map(([text, data]) => (
+              {Object.entries(easySentences).map(([text, data]) => (
                 <button
                   key={text}
                   onClick={() => playAnimation(data)}
