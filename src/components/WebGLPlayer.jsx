@@ -157,49 +157,62 @@ const WebGLPlayer = forwardRef(
     const playerRef = useRef(null);
     const loopTimeoutRef = useRef(null);
     const [isPlayerReady, setIsPlayerReady] = useState(false);
+    const [currentCharacter, setCurrentCharacter] = useState(null);
+    const [currentAvatar, setCurrentAvatar] = useState(null);
 
     // WebGL 콜백 처리 함수
-    const handleWebGLCallback = useCallback((callback, context = "unknown") => {
-      console.log(`[WebGL ${context}]`, callback);
+    const handleWebGLCallback = useCallback(
+      (callback, context = "unknown") => {
+        console.log(`[WebGL ${context}]`, callback);
 
-      // 오류 상태별 상세 처리
-      switch (callback.status) {
-        case 1: // play done
-          console.log(`✅ [WebGL ${context}] 애니메이션 재생 완료`);
-          break;
-        case 2: // play stop
-          console.log(`⏹️ [WebGL ${context}] 애니메이션 재생 중지`);
-          break;
-        case 3: // error: check request id
-          console.error(
-            `❌ [WebGL ${context}] 요청 ID 오류:`,
-            callback.message
-          );
-          console.error("해결 방법: 애니메이션 파일명을 확인하세요");
-          break;
-        case 4: // error: check variable id
-          console.error(
-            `❌ [WebGL ${context}] 변수 ID 오류:`,
-            callback.message
-          );
-          console.error("해결 방법: 애니메이션 변수 설정을 확인하세요");
-          break;
-        case 5: // error: unknown
-          console.error(
-            `❌ [WebGL ${context}] 알 수 없는 오류:`,
-            callback.message
-          );
+        // 오류 상태별 상세 처리
+        switch (callback.status) {
+          case 1: // play done
+            console.log(`✅ [WebGL ${context}] 애니메이션 재생 완료`);
+            break;
+          case 2: // play stop
+            console.log(`⏹️ [WebGL ${context}] 애니메이션 재생 중지`);
+            break;
+          case 3: // error: check request id
+            console.error(
+              `❌ [WebGL ${context}] 요청 ID 오류:`,
+              callback.message
+            );
+            console.error("해결 방법: 애니메이션 파일명을 확인하세요");
+            break;
+          case 4: // error: check variable id
+            console.error(
+              `❌ [WebGL ${context}] 변수 ID 오류:`,
+              callback.message
+            );
+            console.error("해결 방법: 애니메이션 변수 설정을 확인하세요");
+            break;
+          case 5: // error: unknown
+            console.error(
+              `❌ [WebGL ${context}] 알 수 없는 오류:`,
+              callback.message
+            );
+            console.error(`🔍 현재 애니메이션 정보:`, {
+              sentence: sentence,
+              eq4File: sentence
+                ? easySentences[sentence] || hardSentences[sentence]
+                : "알 수 없음",
+              character: currentCharacter,
+              avatar: currentAvatar,
+            });
 
-          // alert 표시하고 2초 후 자동 새로고침
-          alert("일시적인 오류가 발생하여 페이지를 새로고침합니다.");
-          setTimeout(() => {
-            window.location.reload();
-          }, 2000);
-          break;
-        default:
-          console.warn(`⚠️ [WebGL ${context}] 알 수 없는 상태:`, callback);
-      }
-    }, []);
+            // alert 표시하고 2초 후 자동 새로고침
+            alert("일시적인 오류가 발생하여 페이지를 새로고침합니다.");
+            setTimeout(() => {
+              window.location.reload();
+            }, 1000);
+            break;
+          default:
+            console.warn(`⚠️ [WebGL ${context}] 알 수 없는 상태:`, callback);
+        }
+      },
+      [sentence, currentCharacter, currentAvatar]
+    );
 
     // 수동 재생을 위한 함수 (반복 없음)
     const playAnimation = async (ani_name) => {
@@ -291,6 +304,8 @@ const WebGLPlayer = forwardRef(
 
         // 랜덤하게 캐릭터와 아바타 선택
         const { character, avatar } = getRandomCharacterAndAvatar();
+        setCurrentCharacter(character);
+        setCurrentAvatar(avatar);
         console.log(`Selected character: ${character}, avatar: ${avatar}`);
 
         await webGLPlayer.playerInit(character, avatar, (callback) => {
