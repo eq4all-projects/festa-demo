@@ -17,7 +17,7 @@ const FailurePage = () => {
     playFailSound();
   }, [setPageContext, playFailSound]);
 
-  // 그레이스 피리어드: 페이지 마운트 후 500ms 후에 키 입력 활성화
+  // 페이지 마운트 후 500ms 후에 키 입력 활성화
   useEffect(() => {
     const gracePeriodTimer = setTimeout(() => {
       setIsReady(true);
